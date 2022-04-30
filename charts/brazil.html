@@ -1,0 +1,105 @@
+<html>
+<head>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['line']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Ano');
+      data.addColumn('number', 'Valor Producao USA');
+      data.addColumn('number', 'Valor Producao BR');
+      data.addRows([
+            ['1997', 1574108954.0, 1131360424.0], 
+            ['1998', 1612564544.0, 1156455071.0], 
+            ['1999', 1601180191.0, 1173057558.0], 
+            ['2000', 1658028149.0, 1164534920.0], 
+            ['2001', 1600099684.0, 1233236761.0], 
+            ['2002', 1553309083.0, 1292636220.0], 
+            ['2003', 1638869917.0, 1411413962.0], 
+            ['2004', 1761374017.0, 1463976140.0], 
+            ['2005', 1696625637.0, 1474269549.0], 
+            ['2006', 1669086471.0, 1606787821.0], 
+            ['2007', 1794147777.0, 1792580363.0], 
+            ['2008', 1765419954.0, 2022441027.0], 
+            ['2009', 1828119953.0, 2087269686.0], 
+            ['2010', 1796576267.0, 2194670101.0],
+            ['2011', 1754535626.0, 2265671596.0], 
+            ['2012', 1732847832.0, 2236848155.0], 
+            ['2013', 1888200126.0, 2384934820.0],
+            ['2014', 1949199513.0, 2341894713.0],
+            ['2015', 1929399771.0, 2397124967.0], 
+            ['2016', 2117930754.0, 2383182769.0],
+            ['2017', 2003321445.0, 2473620839.0], 
+            ['2018', 2002142416.0, 2424246167.0], 
+            ['2019', 1917989420.0, 2478385646.0], 
+            ['2020', 1892487360.0, 2432736225.0]]);
+      var options = {
+        is3D : true,
+        chart: {
+          title: 'Valor da Producação Agricola',
+          subtitle: 'in Bilions of dollars (USD)'
+        },
+        width: 900,
+        height: 500,
+        axes: {
+          x: {
+            0: {side: 'down'}
+          }
+        }
+      };
+
+      var chart = new google.charts.Line(document.getElementById('line_top_x'));
+
+      chart.draw(data, google.charts.Line.convertOptions(options));
+    }
+  </script>
+</head>
+<body>
+  <div id="line_top_x"></div>
+  
+</body>
+</html>
+<h1>Exportacao por UF</h1>  
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script> 
+<script>
+    google.load('visualization', '1', {
+        'packages': ['geochart', 'table']
+    });
+    google.setOnLoadCallback(drawRegionsMap);
+    
+    function drawRegionsMap() {
+        var data = google.visualization.arrayToDataTable([
+        ['Estado', 'Valor'],
+        ['BR-AC', 353096960.0], ['BR-AL', 12911260672.0], ['BR-AP', 1369297152.0], ['BR-AM', 5061729792.0], ['BR-BA', 67582439424.0], ['BR-CE', 15237477376.0], ['CONSUMO DE BORDO', 25.0], ['BR-DF', 2535949568.0], ['BR-ES', 34562445312.0], ['BR-GO', 78924627968.0], ['BR-MA', 18099716096.0], ['BR-MT', 214672195584.0], ['BR-MS', 63172698112.0], ['MERCADORIA NACIONALIZADA', 257030848.0], ['BR-MG', 137895084032.0], ['NAO DECLARADA', 11622691840.0], ['BR-PA', 31877820416.0], ['BR-PB', 2160211456.0], ['BR-PR', 223756304384.0], ['BR-PE', 9305866240.0], ['BR-PI', 5256157696.0], ['REEXPORTACAO', 67096440.0], ['BR-RJ', 3717670144.0], ['BR-RN', 5308727296.0], ['BR-RS', 216397201408.0], ['BR-RO', 13812285440.0], ['BR-RR', 750552960.0], ['BR-SC', 106159824896.0], ['BR-SP', 337018224640.0], ['BR-SE', 1326781568.0], ['BR-TO', 12230321152.0], ['ZONA NAO DECLARADA', 726344832.0]
+        ]);
+    
+        var view = new google.visualization.DataView(data)
+        view.setColumns([0, 1])
+    
+        var options = {
+            is3D : true,
+            region: 'BR',
+            resolution: 'provinces',
+            width: 800,
+            height: 800,
+            colorAxis: {
+                colors: ['#00008B', '#008000', '#FFFF00']
+                },
+            showLegend : true,
+            sgowZoomOut : true
+        };
+    
+        var chart = new google.visualization.GeoChart(
+        document.getElementById('geo'));
+        chart.draw(data, options);
+    };
+</script>
+
+<body>
+    <div id="geo" style="padding:0; margin: 0 auto"></div>
+</body>
+
+

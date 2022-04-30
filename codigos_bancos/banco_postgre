@@ -1,0 +1,277 @@
+
+select count(*) from pib_agricola;
+truncate pib_agricola;
+select count(*) from exportacao_estado;
+truncate exportacao_estado;
+select count(*) from exportacao_pais;
+truncate exportacao_pais;
+select count(*) from exportacao_produto;
+truncate exportacao_produto;
+select count(*) from quantidade_colheita;
+truncate quantidade_colheita;
+select count(*) from usa_agricultura;
+truncate usa_agricultura;
+select count(*) from valor_producao;
+truncate valor_producao;
+select count(*) from total_exportacao;
+truncate total_exportacao;
+
+-- Tabela pib_agricola:
+
+-- Essa tabela irá receber os valores do CSV do PIB Brasileiro.
+
+-- Criação da tabela de PIB agrícola Brasileiro entre os anos de 1996 - 2020:
+create table if not exists pib_agricola (
+	id_pib serial constraint PK_pib_agricola primary key,
+	ano_pib varchar(4) not null, 
+	insumo float not null,
+	agropecuaria float not null,
+	industria float not null,
+	servicos float not null,
+	total float not null
+);
+
+
+-- Function e trigger da tabela pib_agricola:
+-- Esse conjunto de trigger e function irão multiplicar os valores das colunas (insumo, agropecuaria, industria, servicos e total)
+-- por 1 milhão.
+CREATE OR REPLACE FUNCTION alterar_valor()
+  RETURNS trigger AS
+$$
+BEGIN
+        UPDATE pib_agricola SET insumo = (New.insumo * 1000000) WHERE id_pib = New.id_pib;
+		UPDATE pib_agricola SET agropecuaria = (New.agropecuaria * 1000000) WHERE id_pib = New.id_pib;
+		UPDATE pib_agricola SET industria = (New.industria * 1000000) WHERE id_pib = New.id_pib;
+		UPDATE pib_agricola SET servicos = (New.servicos * 1000000) WHERE id_pib = New.id_pib;
+		UPDATE pib_agricola SET total = (New.total * 1000000) WHERE id_pib = New.id_pib;
+    RETURN NEW;
+END;
+$$
+LANGUAGE 'plpgsql';
+
+CREATE TRIGGER tgr_pib_agicola_update
+  AFTER INSERT
+  ON pib_agricola
+  FOR EACH ROW
+  EXECUTE PROCEDURE alterar_valor();
+  
+  
+-- -----------------------------------------------------------------------------------
+-- Essa tabela receberá os valores do CSV do USDA (Departamento de Agricultura dos Estados Unidos)
+
+-- Tabela da usa_agricultura:
+create table if not exists usa_agricultura (
+	id_usa serial constraint PK_usa_agricultura primary key,
+	ano_usa varchar(4) not null, 
+	valores float not null
+);
+
+-- Esse conjunto de trigger e function irá multiplicar os valores da coluna 'valores' por 1000.
+
+-- Function e trigger da tabela usa_agricultura:
+CREATE OR REPLACE FUNCTION valores_x1000()
+  RETURNS trigger AS
+$$
+BEGIN
+        UPDATE usa_agricultura SET valores = (New.valores * 1000) WHERE id_usa = New.id_usa;
+    RETURN NEW;
+END;
+$$
+LANGUAGE 'plpgsql';
+
+CREATE TRIGGER tgr_usa_agricultura_update
+  AFTER INSERT
+  ON usa_agricultura
+  FOR EACH ROW
+  EXECUTE PROCEDURE valores_x1000();
+  
+  
+  -- -----------------------------------------------------------------------------------
+-- Essa tabela irá receber os valores do CSV novo_valor_producao(FAO).
+
+-- Tabela da valor_producao:
+create table if not exists valor_producao(
+	id_producao serial constraint PK_valor_producao primary key,
+	pais varchar(255) not null, 
+	item varchar(150) not null,
+	ano_producao varchar(4) not null,
+	valor_item float not null
+);
+
+-- Function e trigger da tabela valor_producao:
+-- Esse conjunto de trigger e function irá multiplicar os valores da coluna 'valor_item' por 1000.
+
+CREATE OR REPLACE FUNCTION valor_item_x1000()
+  RETURNS trigger AS
+$$
+BEGIN
+        UPDATE valor_producao SET valor_item = (New.valor_item * 1000) WHERE id_producao = New.id_producao;
+    RETURN NEW;
+END;
+$$
+LANGUAGE 'plpgsql';
+
+CREATE TRIGGER tgr_valor_producao_update
+  AFTER INSERT
+  ON valor_producao
+  FOR EACH ROW
+  EXECUTE PROCEDURE valor_item_x1000();
+  
+
+-- --------------------------------------------------------------------------------
+-- Essa tabela irá receber os valores do CSV quantidade_colheita.
+
+-- Tabela da quantidade_colheita:
+
+create table if not exists quantidade_colheita(
+	id_quantidade serial constraint PK_id_quantidade primary key,
+	pais varchar(255) not null, 
+	item varchar(150) not null,
+	elemento varchar(150)not null,
+	ano_quantidade varchar(4) not null,
+	unidade varchar(50) not null,
+	valor_quantidade float
+);
+
+
+-- Function e trigger da tabela quantidade_colheita:
+
+-- Essa Trigger e Function inserem o número 0 na coluna valor_quantidade, onde tenha valores nulos.
+
+CREATE OR REPLACE FUNCTION valor_quantidade_NaN()
+  RETURNS trigger AS
+$$
+BEGIN	
+		if New.valor_quantidade = 'nan' then
+        UPDATE quantidade_colheita SET valor_quantidade = 0 WHERE id_quantidade = New.id_quantidade;
+		END IF;
+    RETURN NEW;
+END;
+$$
+LANGUAGE 'plpgsql';
+
+CREATE TRIGGER tgr_valor_quantidade_NaN
+  AFTER INSERT
+  ON quantidade_colheita
+  FOR EACH ROW
+  EXECUTE PROCEDURE valor_quantidade_NaN();
+  
+
+-- -------------------------------------------------------------------------------
+  
+-- As tabelas exportacao_pais e total_exportacao irão receber os dados do CSV exportacaoXpais.
+
+-- Tabela da exportacao_pais:
+
+create table if not exists exportacao_pais(
+	pais_exportacao varchar(150) not null, 
+	valor_exportacao float,
+	ano_exportacao varchar(4) not null,
+	primary key (pais_exportacao,ano_exportacao)
+);
+
+
+-- Function e trigger da tabela quantidade_colheita:
+
+CREATE OR REPLACE FUNCTION exportacao_pais_NaN()
+  RETURNS trigger AS
+$$
+BEGIN	
+		if New.valor_exportacao = 'nan' then
+        UPDATE exportacao_pais SET valor_exportacao = 0 WHERE   pais_exportacao = New.pais_exportacao and ano_exportacao = New.ano_exportacao;
+		END IF;
+    RETURN NEW;
+END;
+$$
+LANGUAGE 'plpgsql';
+
+CREATE TRIGGER tgr_exportacao_pais_NaN
+  AFTER INSERT
+  ON exportacao_pais
+  FOR EACH ROW
+  EXECUTE PROCEDURE exportacao_pais_NaN();
+  
+
+-- Tabela do total_exportacao:
+
+create table if not exists total_exportacao(
+	id_total serial constraint PK_total_exportacao primary key, 
+	total_exportacao float,
+	ano_total varchar(4) not null
+);
+select * from total_exportacao;
+-- -------------------------------------------------------------------------------
+
+
+-- A tabela exportacao_estado irá receber os dados do CSV exportacao X uf.
+
+-- Tabela da exportacao_estado:
+
+create table if not exists exportacao_estado(
+	estado varchar (200) not null, 
+	valor_estado float,
+	ano_estado varchar(4) not null,
+	primary key (estado,ano_estado)
+);
+
+
+-- Function e trigger da tabela exportacao_estado:
+
+CREATE OR REPLACE FUNCTION exportacao_estado_NaN()
+  RETURNS trigger AS
+$$
+BEGIN	
+		if New.valor_estado = 'nan' then
+        UPDATE exportacao_estado SET valor_estado = 0 WHERE  estado = New.estado and ano_estado = New.ano_estado;
+		END IF;
+    RETURN NEW;
+END;
+$$
+LANGUAGE 'plpgsql';
+
+CREATE TRIGGER tgr_exportacao_estado_NaN
+  AFTER INSERT
+  ON exportacao_estado
+  FOR EACH ROW
+  EXECUTE PROCEDURE exportacao_estado_NaN();
+
+
+-- ----------------------------------------------------------------------------------------
+
+-- A tabela exportacao_produto irá receber os dados do CSV exportacao X produto.
+
+-- Tabela da exportacao_produto:
+
+create table if not exists exportacao_produto(
+	produto varchar (200) not null, 
+	valor_produto float,
+	ano_produto varchar(4) not null,
+	primary key (produto,ano_produto)
+);
+
+
+-- Function e trigger da tabela exportacao_produto:
+
+CREATE OR REPLACE FUNCTION exportacao_produto_NaN()
+  RETURNS trigger AS
+$$
+BEGIN	
+		if New.valor_produto = 'nan' then
+        UPDATE exportacao_produto SET valor_produto = 0 WHERE  produto = New.produto and ano_produto = New.ano_produto;
+		END IF;
+    RETURN NEW;
+END;
+$$
+LANGUAGE 'plpgsql';
+
+CREATE TRIGGER tgr_exportacao_produto_NaN
+  AFTER INSERT
+  ON exportacao_produto
+  FOR EACH ROW
+  EXECUTE PROCEDURE exportacao_produto_NaN();
+  
+  SELECT * FROM exportacao_pais;
+
+	
+
+

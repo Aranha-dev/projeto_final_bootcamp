@@ -1,0 +1,84 @@
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['bar']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+        ['Ano', 'Agricultura', 'Agronegocio'],
+['1996', 0, 0],
+['1997', -2.870608421768619, -3.470063017859786], 
+['1998', -1.0091416388281864, -1.5506354022456108],
+['1999', -0.20708053804921178, -0.42034176262752254],
+['2000', 0.8714996884849171, 1.0921417391679178], 
+['2001', -0.9317482754124242, -0.43832842712417985],
+['2002', 0.7044398522654802, 0.11121977235947256],
+['2003', 0.4783957950043991, 0.3316882576193301], 
+['2004', -2.7245131228966954, -3.077969369962222],
+['2005', -2.5208897961129786, -3.0227612907400143], 
+['2006', -0.0016562302567812992, -1.0649780290249886],
+['2007', -1.6777588384742472, -0.6465386839379725], 
+['2008', -0.7805294658648485, -0.06689547035994892], 
+['2009', -0.7856247201233497, -1.225274826967798], 
+['2010', -0.0030653809524725517, 0.07652086878226783], 
+['2011', -0.09501657037938216, -0.7008747185054247],
+['2012', -0.9477400345983718, -1.6113298858232312], 
+['2013', -1.0019410094606513, -0.29971830723628656], 
+['2014', -0.7230800408102436, -0.16840631556909713], 
+['2015', 0.8853506375283882, 1.461246079736707], 
+['2016', 1.9185437633105842, 2.1660145490356655], 
+['2017', -1.126418034583402, -1.5441768930044688], 
+['2018', 0.153260176041762, -0.6477635864503881], 
+['2019', -0.6187527350596493, 0.40101008618502476], 
+['2020', 4.205437369073676, 6.06327443706078]
+        ]);
+
+        var options = {
+          chart: {
+            title: 'Crescimento do PIB',
+            subtitle: 'Crescimento do pib : 1996-2020',
+          },
+          is3D: true,
+          bars: 'vertical' // Required for Material Bar Charts.
+        };
+
+        var chart = new google.charts.Bar(document.getElementById('barchart_material'));
+
+        chart.draw(data, google.charts.Bar.convertOptions(options));
+      }
+    </script>
+  </head>
+  <body>
+    <div id="barchart_material" style="width: auto; height: 500px;"></div>
+  </body>
+
+  <head>
+    <script type="text/javascript">
+      google.charts.load("current", {packages:["corechart"]});
+      google.charts.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['Pais', 'Valor'],
+          ['UK',             3.717719e+11],
+          ['CHINA',          3.364726e+11],
+          ['EUA',            1.441930e+11],
+          ['URSS',           5.250603e+10],
+          ['Japao',          5.148357e+10]
+        ]);
+
+        var options = {
+          title: 'Exportacao Brasileirad do AgroNegocio 1997-2020',
+          is3D: true,
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('piechart_3d'));
+        chart.draw(data, options);
+      }
+    </script>
+  </head>
+  <body>
+    <div id="piechart_3d" style="width: 900px; height: 500px;"></div>
+  </body>
+</html>
